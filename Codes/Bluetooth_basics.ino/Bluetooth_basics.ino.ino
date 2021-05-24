@@ -44,12 +44,13 @@
     Each service has its own UUID. Some Services may have pre-defined UUIDs
 
 */
-#define SERVICE_UUID       "c8ceec9-1ad4-4ddf-adaf-d4747c84b6d2"
-#define CHARACTERISTIC_UUID "ff9835-e827-43c8-b88a-75b4c9903f9d"
 
-class MyCallbacks: public BLECharacteristicCallbacks {
+#define SERVICE_UUID       "1a2a3e3f-1fb5-459e-8fcc-c5c9c331924b"
+#define CHARACTERISTIC_UUID "1a2a3e3f-1fb5-459e-8fcc-c5c9c331924b"//"beb5483e-36e1-4688-b7f5-ea07061b26a8"
+
+ class MyCallbacks : public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *pCharacteristic) {
-      std::string value = pCharacteristic->getValue();
+      std::string value = pCharacteristic->getValue();            // Defines a class and associates it with a callback function
 
       if (value.length() > 0) {
         Serial.println("*********");
@@ -67,25 +68,31 @@ void setup() {
   Serial.begin(115200);
   Serial.println("Starting BLE work!");
 
-  BLEDevice::init("Nalin's ESP32");
-  BLEServer *pServer = BLEDevice::createServer();
-  BLEService *pService = pServer->createService(SERVICE_UUID);
-  BLECharacteristic *pCharacteristic = pService->createCharacteristic(
-                                         CHARACTERISTIC_UUID,
-                                         BLECharacteristic::PROPERTY_READ |
+  BLEDevice::init("ESP32");                                                //Used to name the esp32 
+
+  //BLEServer initialization  
+  BLEServer *pServer = BLEDevice::createServer();                          //Used to create a BLE server; It initializes the ESP32 as a BLE Server
+  BLEService *pService = pServer->createService(SERVICE_UUID);             //Used to create a custom service with the mentioned UUID
+  BLECharacteristic *pCharacteristic = pService->createCharacteristic(     // Used to create Characteristic of the given custom service
+                                         CHARACTERISTIC_UUID,              // This Characteristic has this CHARACTERISTIC_UUID
+                                         BLECharacteristic::PROPERTY_READ |// The service will have READ && WRITE Properties
                                          BLECharacteristic::PROPERTY_WRITE
                                        );
 
-  pCharacteristic->setValue("I am right here!");
-  pCharacteristic->setCallbacks(new MyCallbacks());
-  pService->start();
-  // BLEAdvertising *pAdvertising = pServer->getAdvertising();  // this still is working for backward compatibility
+  pCharacteristic->setValue("I am right here!");                           // Sets the value of the characteristic such that it is available to read from
+  pCharacteristic->setCallbacks(new MyCallbacks());                        // Sets the callback function to point ti the specified class MyCallbacks
+  pService->start();                                                       // Starts the custom service
+
+  // This code is used to init advertising related variables 
+  // BLEAdvertising *pAdvertising = pServer2->getAdvertising();  // this still is working for backward compatibility
   BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
   pAdvertising->addServiceUUID(SERVICE_UUID);
   pAdvertising->setScanResponse(true);
   pAdvertising->setMinPreferred(0x06);  // functions that help with iPhone connections issue
   pAdvertising->setMinPreferred(0x12);
-  BLEDevice::startAdvertising();
+  BLEDevice::startAdvertising();                                            // Starts advertising the device to other slaves such that they can detect the device
+                                                                            // connect to it and start communicating with it
+                                                                            
   Serial.println("Characteristic defined! Now you can read it in your phone!");
 }
 
