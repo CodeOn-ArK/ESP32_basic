@@ -22,7 +22,7 @@
     updates by chegewara
 */
 
-#include <BLEDevice.h> //These are the headers needed for creating a BLE server 
+#include <BLEDevice.h>  //These are the headers needed for creating a BLE server
 #include <BLEUtils.h>
 #include <BLEServer.h>
 
@@ -45,54 +45,53 @@
 
 */
 
-#define SERVICE_UUID       "1a2a3e3f-1fb5-459e-8fcc-c5c9c331924b"
-#define CHARACTERISTIC_UUID "1a2a3e3f-1fb5-459e-8fcc-c5c9c331924b"//"beb5483e-36e1-4688-b7f5-ea07061b26a8"
+#define SERVICE_UUID "1a2a3e3f-1fb5-459e-8fcc-c5c9c331924b"
+#define CHARACTERISTIC_UUID "1a2a3e3f-1fb5-459e-8fcc-c5c9c331924b"  //"beb5483e-36e1-4688-b7f5-ea07061b26a8"
 
- class MyCallbacks : public BLECharacteristicCallbacks {
-    void onWrite(BLECharacteristic *pCharacteristic) {
-      std::string value = pCharacteristic->getValue();            // Defines a class and associates it with a callback function
+class MyCallbacks : public BLECharacteristicCallbacks {
+  void onWrite(BLECharacteristic *pCharacteristic) {
+    std::string value = pCharacteristic->getValue();  // Defines a class and associates it with a callback function
 
-      if (value.length() > 0) {
-        Serial.println("*********");
-        Serial.print("New value: ");
-        for (int i = 0; i < value.length(); i++)
-          Serial.print(value[i]);
+    if (value.length() > 0) {
+      Serial.println("*********");
+      Serial.print("New value: ");
+      for (int i = 0; i < value.length(); i++)
+        Serial.print(value[i]);
 
-        Serial.println();
-        Serial.println("*********");
-      }
+      Serial.println();
+      Serial.println("*********");
     }
+  }
 };
 
 void setup() {
   Serial.begin(115200);
   Serial.println("Starting BLE work!");
 
-  BLEDevice::init("ESP32");                                                //Used to name the esp32 
+  BLEDevice::init("ESP32");  //Used to name the esp32
 
-  //BLEServer initialization  
-  BLEServer *pServer = BLEDevice::createServer();                          //Used to create a BLE server; It initializes the ESP32 as a BLE Server
-  BLEService *pService = pServer->createService(SERVICE_UUID);             //Used to create a custom service with the mentioned UUID
-  BLECharacteristic *pCharacteristic = pService->createCharacteristic(     // Used to create Characteristic of the given custom service
-                                         CHARACTERISTIC_UUID,              // This Characteristic has this CHARACTERISTIC_UUID
-                                         BLECharacteristic::PROPERTY_READ |// The service will have READ && WRITE Properties
-                                         BLECharacteristic::PROPERTY_WRITE
-                                       );
+  //BLEServer initialization
+  BLEServer *pServer = BLEDevice::createServer();                       //Used to create a BLE server; It initializes the ESP32 as a BLE Server
+  BLEService *pService = pServer->createService(SERVICE_UUID);          //Used to create a custom service with the mentioned UUID
+  BLECharacteristic *pCharacteristic = pService->createCharacteristic(  // Used to create Characteristic of the given custom service
+    CHARACTERISTIC_UUID,                                                // This Characteristic has this CHARACTERISTIC_UUID
+    BLECharacteristic::PROPERTY_READ |                                  // The service will have READ && WRITE Properties
+      BLECharacteristic::PROPERTY_WRITE);
 
-  pCharacteristic->setValue("I am right here!");                           // Sets the value of the characteristic such that it is available to read from
-  pCharacteristic->setCallbacks(new MyCallbacks());                        // Sets the callback function to point ti the specified class MyCallbacks
-  pService->start();                                                       // Starts the custom service
+  pCharacteristic->setValue("I am right here!");     // Sets the value of the characteristic such that it is available to read from
+  pCharacteristic->setCallbacks(new MyCallbacks());  // Sets the callback function to point ti the specified class MyCallbacks
+  pService->start();                                 // Starts the custom service
 
-  // This code is used to init advertising related variables 
+  // This code is used to init advertising related variables
   // BLEAdvertising *pAdvertising = pServer2->getAdvertising();  // this still is working for backward compatibility
   BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
   pAdvertising->addServiceUUID(SERVICE_UUID);
   pAdvertising->setScanResponse(true);
   pAdvertising->setMinPreferred(0x06);  // functions that help with iPhone connections issue
   pAdvertising->setMinPreferred(0x12);
-  BLEDevice::startAdvertising();                                            // Starts advertising the device to other slaves such that they can detect the device
-                                                                            // connect to it and start communicating with it
-                                                                            
+  BLEDevice::startAdvertising();  // Starts advertising the device to other slaves such that they can detect the device
+                                  // connect to it and start communicating with it
+
   Serial.println("Characteristic defined! Now you can read it in your phone!");
 }
 
