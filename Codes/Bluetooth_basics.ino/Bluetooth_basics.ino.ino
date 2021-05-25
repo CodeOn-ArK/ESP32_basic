@@ -76,7 +76,7 @@ void setup() {
   BLECharacteristic *pCharacteristic = pService->createCharacteristic(  // Used to create Characteristic of the given custom service
     CHARACTERISTIC_UUID,                                                // This Characteristic has this CHARACTERISTIC_UUID
     BLECharacteristic::PROPERTY_READ |                                  // The service will have READ && WRITE Properties
-      BLECharacteristic::PROPERTY_WRITE);
+    BLECharacteristic::PROPERTY_WRITE);
 
   pCharacteristic->setValue("I am right here!");     // Sets the value of the characteristic such that it is available to read from
   pCharacteristic->setCallbacks(new MyCallbacks());  // Sets the callback function to point ti the specified class MyCallbacks
