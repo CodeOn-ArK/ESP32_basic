@@ -1,7 +1,7 @@
 #include <WiFi.h>
 
 const char* ssid     = "AndroidAPE9CC";
-const char* password = "AndroidAPE9C";
+const char* password = "AndroidAPE9CC";
 
 void setup()
 { 
